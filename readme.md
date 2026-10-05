@@ -1,40 +1,38 @@
-# Linux Process Monitoring and Control System
+# 🏛️ University Laboratory Management Server
 
-## 1. About the Project
-This project is a lightweight, terminal-based process manager built in C for Linux environments. It monitors active system processes and provides administrative controls such as pausing, resuming, or terminating specific tasks.
+![C](https://img.shields.io/badge/Language-C-blue.svg)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20POSIX-lightgrey.svg)
+![Concurrency](https://img.shields.io/badge/Concurrency-pthreads-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Instead of relying on third-party libraries, the application directly navigates and parses the Linux `/proc` virtual filesystem to extract metrics like Process ID (PID), Parent Process ID (PPID), execution state, and memory usage. It features a multi-process design where a frontend user interface communicates with a background daemon using unnamed pipes (`pipe()`) for Inter-Process Communication (IPC). It also includes a memory watchdog that automatically flags high-memory processes and logs administrative actions to a local file.
+A highly concurrent, thread-safe server application built entirely in **C** to manage university laboratory resources. 
 
----
+This project simulates a real-world Operating System bottleneck: allocating limited physical equipment (like PCs, oscilloscopes, or testing kits) to a massive queue of students without causing race conditions, memory corruption, or CPU busy-waiting.
 
-## 2. Technologies Used
-* **Operating System:** Linux / Ubuntu (via Windows Subsystem for Linux - WSL)
-* **Programming Language:** C (Standard POSIX APIs)
-* **Compiler:** GCC (GNU Compiler Collection)
-* **Core Concepts & APIs:**
-  * Virtual Filesystem (`/proc` directory traversal via `<dirent.h>`)
-  * Inter-Process Communication (`pipe()`, `fork()`)
-  * Signal Handling (`kill()`, `SIGSTOP`, `SIGCONT`, `SIGKILL`)
-  * Low-level & Standard File I/O (`read()`, `write()`, `fopen()`, `fprintf()`)
+## ✨ Features
 
----
+* **⚡ Thread Pool Architecture:** Pre-spawns a pool of background worker threads. Uses `pthread_cond_t` (Condition Variables) to ensure threads consume **0% CPU** while idle.
+* **🔒 Strict Memory Safety:** Implements POSIX Mutexes (`pthread_mutex_t`) to completely prevent race conditions during concurrent data reads/writes.
+* **🚦 Real-Time Hardware Mapping:** Uses POSIX Semaphores (`sem_t`) as "digital bouncers" to strictly enforce physical equipment limits. 
+* **🔄 Circular Request Queue:** Achieves `O(1)` time complexity for enqueueing and dequeueing student requests.
+* **📊 Live OS Monitor:** A dynamic, refreshing terminal UI that tracks active threads and live equipment availability.
+* **💾 Data Persistence & CSV Logging:** 
+  * Saves core state to `labs.txt` and `students.txt`.
+  * Automatically generates `allocation.csv` and `attendance.csv` for enterprise-style tracking.
+* **🛑 Graceful Shutdown:** Traps OS signals (`SIGINT` / Ctrl+C) to wake sleeping threads, destroy mutexes/semaphores, and prevent memory leaks.
 
-## 3. Output
+## 🛠️ Tech Stack
 
-### Terminal Interface (Interactive Menu)
+* **Language:** C (Standard Enterprise Modularity)
+* **Compiler:** GCC
+* **OS Primitives:** POSIX Threads (`<pthread.h>`), Semaphores (`<semaphore.h>`), Signals (`<signal.h>`)
+* **Environment:** Linux / Ubuntu / WSL
+
+## 📂 File Structure
+
 ```text
-=== LINUX MULTI-FILE IPC MONITOR ===
-
-PID        PPID       STATE      NAME                
-------------------------------------------------------
-1          0          S          systemd             
-742        1          S          dbus-daemon         
-1289       1          S          sshd                
-2410       1289       R          python3             
-------------------------------------------------------
-
-Options: [0] Refresh | [PID] Control Process | [-1] Exit
-Choice: 2410
-Action for PID 2410 -> 1:STOP 2:CONT 3:KILL : 1
-Signal command sent via IPC pipe...
-Press Enter to continue...
+├── lab_system.h        # System blueprints, Structs, and Extern variables
+├── main.c              # Entry point, thread initialization, and signal trapping
+├── admin.c             # Dynamic UI, Data entry, and CSV/TXT File I/O
+├── worker.c            # Pure concurrency logic, queue popping, and semaphore locks
+└── README.md           # You are here

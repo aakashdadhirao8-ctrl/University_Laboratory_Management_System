@@ -3,7 +3,7 @@
 ![C](https://img.shields.io/badge/Language-C-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20POSIX-lightgrey.svg)
 ![Concurrency](https://img.shields.io/badge/Concurrency-pthreads-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 
 A highly concurrent, thread-safe server application built entirely in **C** to manage university laboratory resources. 
 
